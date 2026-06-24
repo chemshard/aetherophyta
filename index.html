@@ -270,6 +270,8 @@
       display: grid;
       grid-template-rows: auto auto auto minmax(0, 1fr);
       align-content: stretch;
+      align-self: start;
+      height: clamp(590px, 72vh, 720px);
       min-height: 0;
     }
 
@@ -324,7 +326,6 @@
       align-content: start;
       gap: 2px;
       min-height: 0;
-      max-height: none;
       overflow: auto;
       border-top: 1px solid var(--line);
     }
@@ -1112,6 +1113,17 @@
       gap: 12px;
     }
 
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .modal-actions button {
+      min-height: 46px;
+      font-weight: 900;
+    }
+
     .event-card {
       position: fixed;
       inset: 0;
@@ -1632,7 +1644,10 @@
     <div class="modal-card">
       <h2 id="gameOverTitle">Lineage ended</h2>
       <p id="gameOverText"></p>
-      <button class="primary" id="modalRestart">Start another lineage</button>
+      <div class="modal-actions">
+        <button id="modalViewLineage">View lineage</button>
+        <button class="primary" id="modalRestart">Start another lineage</button>
+      </div>
     </div>
   </div>
 
@@ -1714,21 +1729,38 @@
       { id: "variegated_chlorosis", name: "Variegated Chlorosis", requires: ["leaves"], ma: 260, quality: "unlucky", effects: { wet: -0.08, dry: -0.08, height: -0.06, cost: 0.1 }, pros: ["Odd leaves sometimes avoid grazers"], cons: ["Photosynthesis falters across habitats"] },
       { id: "serotiny", name: "Serotinous Cones", requiresAny: [["cone_scales"], ["fire_resprouting"]], ma: 245, effects: { dry: 0.12, resilience: 0.18, diversity: 0.05 }, pros: ["Seeds wait for fire-opened ground", "Dry forests rebound after burns"], cons: ["Fire-free eras slow recruitment"] },
       { id: "salt_glands", name: "Salt Glands", requiresAny: [["salt_tolerance", "leaves"], ["salt_tolerance", "roots"]], ma: 210, effects: { wet: 0.12, dry: 0.08, resilience: 0.06 }, pros: ["Leaves and roots can dump excess salt", "Brackish habitats become safer"], cons: ["Salt pumping costs water"] },
+      { id: "trichomes", name: "Leaf Trichomes", requires: ["leaves"], ma: 190, effects: { herbivore: 0.16, dry: 0.08 }, pros: ["Fine leaf hairs slow grazers", "Leaf surfaces hold a gentler boundary layer"], cons: ["Hairy leaves cost tissue to maintain"] },
       { id: "flowers", name: "Flowers", requires: ["seeds", "leaves"], ma: 160, effects: { diversity: 0.5 }, pros: ["Pollinator partnerships", "Speciation accelerates"], cons: ["Dependence risk appears"] },
       { id: "windflowers", name: "Reduced Wind Flowers", requires: ["flowers"], ma: 150, effects: { dry: 0.18, resilience: 0.08 }, pros: ["Pollinators optional", "Open habitats improve"], cons: ["Pollen waste"] },
       { id: "nectar_spurs", name: "Nectar Spurs", requires: ["flowers"], ma: 130, quality: "lucky", effects: { diversity: 0.28 }, pros: ["Pollinators become loyal partners", "Flower forms split rapidly"], cons: ["Specialist partners can disappear"] },
       { id: "tubular", name: "Tubular Flowers", requires: ["flowers"], ma: 125, effects: { diversity: 0.35 }, pros: ["Precise animal pollination", "Specialized radiations"], cons: ["Partner losses hurt"] },
+      { id: "aromatic_oils", name: "Aromatic Oils", requires: ["flowers", "trichomes"], ma: 122, effects: { herbivore: 0.24, diversity: 0.08, cost: 0.03 }, pros: ["Scented tissues shape pollinator attention", "Chemistry discourages many grazers"], cons: ["Volatile oils cost carbon and water"] },
       { id: "scent_mimicry", name: "Scent Mimicry", requires: ["flowers"], ma: 120, quality: "risky", effects: { diversity: 0.18, herbivore: -0.06 }, pros: ["Flowers trick new visitors", "Pollinator niches multiply"], cons: ["Some enemies are tricked too"] },
       { id: "sterile_hybrid_swarm", name: "Sterile Hybrid Swarm", requires: ["flowers"], ma: 118, quality: "unlucky", effects: { diversity: -0.18, resilience: -0.06, instability: 0.08 }, pros: ["Many forms appear at once"], cons: ["Too many crosses produce dead ends"] },
       { id: "fruits", name: "Fleshy Fruits", requires: ["flowers"], ma: 115, effects: { diversity: 0.42 }, pros: ["Animal dispersal", "Forest islands connect"], cons: ["Frugivores become important"] },
+      { id: "palmate_leaves", name: "Palmate Leaves", requires: ["flowers", "leaves"], ma: 112, effects: { wet: 0.12, diversity: 0.1 }, pros: ["Broad hand-shaped leaves harvest patchy light", "Warm forest edges open up"], cons: ["Large leaves tear in exposed winds"] },
+      { id: "latex", name: "Latex Canals", requires: ["flowers", "wood"], ma: 110, effects: { herbivore: 0.24, resilience: 0.06, cost: 0.04 }, pros: ["Milky sap seals wounds", "Grazers meet sticky chemistry"], cons: ["Sap networks cost carbon"] },
+      { id: "mucilage_fibers", name: "Mallow Fibers", requiresAny: [["mucilage", "flowers"], ["palmate_leaves", "flowers"]], ma: 108, effects: { wet: 0.1, height: 0.08, resilience: 0.05 }, pros: ["Soft fibers and mucilage support broad leaves", "Humid margins become productive"], cons: ["Dry heat can wilt the tissues"] },
       { id: "ants", name: "Mutualistic Ants", requires: ["flowers"], ma: 100, effects: { herbivore: 0.42, diversity: 0.12 }, pros: ["Bodyguards patrol stems", "Herbivore outbreaks soften"], cons: ["Nectar and housing cost"] },
       { id: "dormancy", name: "Dormancy", requires: ["seeds"], ma: 95, effects: { resilience: 0.26, cold: 0.12 }, pros: ["Waits out cold or drought", "Extinction survival improves"], cons: ["Some years are skipped"] },
       { id: "selfing", name: "Self-Pollination", requires: ["flowers"], ma: 92, quality: "risky", effects: { resilience: 0.18, diversity: -0.12 }, pros: ["A lone plant can found a colony"], cons: ["Long-term variation narrows"] },
+      { id: "orchid_mycorrhiza", name: "Orchid Mycorrhiza", requires: ["flowers", "mycorrhizae"], ma: 90, quality: "lucky", effects: { diversity: 0.28, wet: 0.08, cost: 0.04 }, pros: ["Tiny seeds recruit through fungal partners", "Epiphyte and forest niches split rapidly"], cons: ["Seedlings depend on compatible fungi"] },
       { id: "parasite_magnet", name: "Parasite Magnet", requires: ["flowers"], ma: 86, quality: "unlucky", effects: { herbivore: -0.18, resilience: -0.08, instability: 0.08 }, pros: ["Nectar traffic is intense"], cons: ["Parasites ride the same routes"] },
+      { id: "palm_crown", name: "Palm Crown", requires: ["flowers", "leaves", "seeds"], ma: 85, effects: { wet: 0.12, dry: 0.08, height: 0.2, diversity: 0.08 }, pros: ["A terminal crown lifts leaves above crowded understory", "Tropical and coastal habitats improve"], cons: ["Single growing tips are vulnerable"] },
+      { id: "glucosinolates", name: "Mustard Oils", requires: ["flowers", "toxins"], ma: 82, effects: { herbivore: 0.28, dry: 0.04, cost: 0.04 }, pros: ["Pungent chemistry deters many insects", "Open disturbed ground becomes safer"], cons: ["Specialist herbivores can learn the signal"] },
       { id: "nitrogen_nodules", name: "Nitrogen Nodules", requires: ["roots"], ma: 80, quality: "lucky", effects: { wet: 0.1, dry: 0.1, diversity: 0.14, resilience: 0.05 }, pros: ["Poor soils become opportunity", "Open habitats fill faster"], cons: ["Root partners demand sugars"] },
+      { id: "spathe_spadix", name: "Spathe and Spadix", requiresAny: [["flowers", "aerenchyma"], ["flowers", "shade_tolerance"]], ma: 78, effects: { wet: 0.22, diversity: 0.14, herbivore: 0.05 }, pros: ["A hooded spathe shelters crowded flowers", "Swamp and shade pollination become reliable"], cons: ["Heat and scent displays cost energy"] },
+      { id: "stone_fruits", name: "Stone Fruits", requires: ["fruits"], ma: 76, effects: { diversity: 0.2, resilience: 0.08 }, pros: ["Hard pits protect embryos through animal dispersal", "Woodland descendants spread in pulses"], cons: ["Large fruits depend on dispersers"] },
+      { id: "capitula", name: "Composite Flower Heads", requires: ["flowers"], ma: 75, effects: { diversity: 0.3, herbivore: 0.08 }, pros: ["Many tiny florets behave like one flower", "Pollinator visits become efficient"], cons: ["Dense heads invite seed predators"] },
+      { id: "climbing_tendrils", name: "Climbing Tendrils", requires: ["leaves", "fruits"], ma: 74, effects: { wet: 0.12, diversity: 0.14, height: 0.06 }, pros: ["Vines borrow support instead of building trunks", "Forest edges and gaps diversify"], cons: ["Open ground offers little to climb"] },
+      { id: "nightshade_alkaloids", name: "Nightshade Alkaloids", requires: ["flowers", "fruits", "toxins"], ma: 72, quality: "risky", effects: { herbivore: 0.3, diversity: 0.12, cost: 0.06 }, pros: ["Powerful alkaloids defend soft tissues", "Fruit chemistry creates sharp ecological niches"], cons: ["Toxic tissues are expensive to manage"] },
       { id: "grass_blades", name: "Grasslike Blades", requiresAny: [["windflowers"], ["rapid", "seeds"]], ma: 70, effects: { dry: 0.18, diversity: 0.2, herbivore: 0.08 }, pros: ["Grazing and fire become survivable", "Open plains diversify"], cons: ["Shade becomes punishing"] },
       { id: "epiphyte_habit", name: "Epiphyte Habit", requires: ["roots", "fruits"], ma: 68, quality: "risky", effects: { wet: 0.16, diversity: 0.18, dry: -0.12 }, pros: ["Seeds germinate on branches above the forest floor", "Rainforest niches multiply"], cons: ["Dry air kills exposed seedlings"] },
+      { id: "compound_umbels", name: "Compound Umbels", requires: ["flowers", "aromatic_oils"], ma: 66, effects: { diversity: 0.18, herbivore: 0.12, dry: 0.04 }, pros: ["Flat-topped flower clusters recruit small insects", "Aromatic stems defend open habitats"], cons: ["Umbels expose many flowers at once"] },
+      { id: "citrus_oil_glands", name: "Citrus Oil Glands", requires: ["fruits", "aromatic_oils"], ma: 65, effects: { herbivore: 0.24, diversity: 0.16, cost: 0.04 }, pros: ["Oil-filled leaves and rinds deter grazers", "Fruit scents shape animal dispersal"], cons: ["Volatile chemistry needs steady resources"] },
+      { id: "pepo_fruits", name: "Pepo Gourds", requires: ["climbing_tendrils", "fruits"], ma: 64, effects: { resilience: 0.14, diversity: 0.12, wet: 0.06 }, pros: ["Thick-rinded fruits protect many seeds", "Vine lineages colonize disturbed edges"], cons: ["Heavy fruits travel only with help"] },
       { id: "frost_hardening", name: "Frost Hardening", requires: ["dormancy"], ma: 60, effects: { cold: 0.32, resilience: 0.08 }, pros: ["Freezing nights stop being fatal", "Tundra routes open"], cons: ["Warm growth starts slowly"] },
+      { id: "fig_syconia", name: "Fig Syconia", requires: ["latex", "fruits"], ma: 58, effects: { diversity: 0.22, wet: 0.1, resilience: 0.06 }, pros: ["Enclosed fig-like inflorescences protect flowers", "Specialized animal partners emerge"], cons: ["Pollination becomes highly dependent"] },
       { id: "island_gigantism", name: "Island Gigantism", requires: ["fruits"], ma: 45, quality: "risky", effects: { height: 0.25, diversity: 0.12, cost: 0.08 }, pros: ["Isolated branches become strange giants"], cons: ["Huge bodies fail when islands change"] },
       { id: "water_storage_tissues", name: "Water Storage Tissues", requiresAny: [["cam"], ["cuticle", "roots"]], ma: 42, effects: { dry: 0.22, resilience: 0.08, height: -0.04 }, pros: ["Succulent tissues bridge dry seasons", "Desert lineages persist longer"], cons: ["Swollen bodies grow slowly"] },
       { id: "mycorrhizae", name: "Mycorrhizal Bargains", requires: ["roots"], ma: 460, effects: { wet: 0.18, dry: 0.18, diversity: 0.14 }, pros: ["Fungal nutrient networks", "Poor soils become workable"], cons: ["Carbon shared below ground"] }
@@ -1848,7 +1880,7 @@
         epithets: ["floribunda", "petalifera", "nectarifera", "herbacea"]
       }
     };
-    const milestoneTraitIds = new Set(["cuticle", "poikilohydry", "salt_tolerance", "vascular", "roots", "leaves", "wood", "fire_resprouting", "seeds", "cone_scales", "flowers", "nectar_spurs", "fruits", "nitrogen_nodules", "grass_blades", "floating", "cam", "dormancy", "frost_hardening", "serotiny", "epiphyte_habit"]);
+    const milestoneTraitIds = new Set(["cuticle", "poikilohydry", "salt_tolerance", "vascular", "roots", "leaves", "wood", "fire_resprouting", "seeds", "cone_scales", "trichomes", "flowers", "nectar_spurs", "aromatic_oils", "fruits", "capitula", "glucosinolates", "nightshade_alkaloids", "climbing_tendrils", "pepo_fruits", "compound_umbels", "orchid_mycorrhiza", "mucilage_fibers", "latex", "fig_syconia", "citrus_oil_glands", "palm_crown", "spathe_spadix", "nitrogen_nodules", "grass_blades", "floating", "cam", "dormancy", "frost_hardening", "serotiny", "epiphyte_habit"]);
     const coreConvergenceTraitIds = new Set(["cuticle", "stomata", "rhizoids", "hydroids", "air_pores", "vascular", "roots", "leaves", "wood", "seeds", "flowers"]);
     const traitSynergies = [
       { id: "bird_dispersal", title: "Bird Dispersal", requires: ["flowers", "fruits"], text: "Flowers + fruits turn animals into moving seed routes.", bonus: 0.22 },
@@ -1952,6 +1984,7 @@
       eventTitle: document.getElementById("eventTitle"),
       eventText: document.getElementById("eventText"),
       eventStats: document.getElementById("eventStats"),
+      modalViewLineage: document.getElementById("modalViewLineage"),
       modalRestart: document.getElementById("modalRestart")
     };
 
@@ -2011,7 +2044,8 @@
             habitats: { "Coastal Mudflats": 0.55, "Freshwater": 0.28, "Wet Lowlands": 0.17 },
             pollinator: null,
             lastSplit: START_MA,
-            seed: 7429 + runSeed % 1000000
+            seed: 7429 + runSeed % 1000000,
+            taxonomy: null
           }
         ]
       };
@@ -2295,13 +2329,13 @@
       const quality = mutationQuality(item);
       const luck = lineageMutationLuck(lineage);
       let weight = 1 + ((lineage.seed + item.id.length * 17 + state.turn * 3) % 11) / 18;
-      if (item.id === "mucilage" || item.id === "hydroids" || item.id === "aerenchyma" || item.id === "floating" || item.id === "salt_tolerance" || item.id === "shallow_roots" || item.id === "salt_glands" || item.id === "epiphyte_habit") weight += habitat.wet * 2.1;
+      if (item.id === "mucilage" || item.id === "hydroids" || item.id === "aerenchyma" || item.id === "floating" || item.id === "salt_tolerance" || item.id === "shallow_roots" || item.id === "salt_glands" || item.id === "spathe_spadix" || item.id === "palm_crown" || item.id === "epiphyte_habit") weight += habitat.wet * 2.1;
       if (item.id === "cuticle" || item.id === "poikilohydry" || item.id === "cam" || item.id === "needles" || item.id === "waxy_bloom" || item.id === "cone_scales" || item.id === "grass_blades" || item.id === "fire_resprouting" || item.id === "sporopollenin_thickening" || item.id === "desiccation_curling" || item.id === "leaf_cutin" || item.id === "serotiny" || item.id === "water_storage_tissues") weight += habitat.dry * 2.1;
       if (item.id === "lichen_crust" || item.id === "dormancy" || item.id === "frost_hardening") weight += (habitat.dry + (habitat.name === "Alpine" || habitat.name === "Tundra" ? 0.8 : 0)) * 1.3;
       if (item.id === "roots" || item.id === "root_hairs" || item.id === "mycorrhizae" || item.id === "nitrogen_nodules") weight += Object.keys(lineage.habitats).length * 0.35;
-      if (item.id === "wood" || item.id === "leaves" || item.id === "forked_axes" || item.id === "cambium_ring" || item.id === "lignin_overload" || item.id === "brittle_wood" || item.id === "shade_tolerance" || item.id === "resin_canals") weight += habitat.name.includes("Forest") ? 1.5 : 0.35;
-      if (item.id === "flowers" || item.id === "fruits" || item.id === "tubular" || item.id === "nectar_spurs" || item.id === "scent_mimicry" || item.id === "selfing" || item.id === "sterile_hybrid_swarm" || item.id === "parasite_magnet" || item.id === "epiphyte_habit") weight += Math.min(2.2, lineage.species / 25);
-      if (item.id === "toxins" || item.id === "thorns" || item.id === "ants" || item.id === "rapid" || item.id === "resin_canals") weight += state.ma < 320 ? 0.8 : 0.1;
+      if (item.id === "wood" || item.id === "leaves" || item.id === "trichomes" || item.id === "palmate_leaves" || item.id === "latex" || item.id === "mucilage_fibers" || item.id === "fig_syconia" || item.id === "palm_crown" || item.id === "forked_axes" || item.id === "cambium_ring" || item.id === "lignin_overload" || item.id === "brittle_wood" || item.id === "shade_tolerance" || item.id === "resin_canals") weight += habitat.name.includes("Forest") ? 1.5 : 0.35;
+      if (item.id === "flowers" || item.id === "fruits" || item.id === "tubular" || item.id === "nectar_spurs" || item.id === "aromatic_oils" || item.id === "capitula" || item.id === "compound_umbels" || item.id === "orchid_mycorrhiza" || item.id === "spathe_spadix" || item.id === "stone_fruits" || item.id === "climbing_tendrils" || item.id === "pepo_fruits" || item.id === "citrus_oil_glands" || item.id === "fig_syconia" || item.id === "scent_mimicry" || item.id === "selfing" || item.id === "sterile_hybrid_swarm" || item.id === "parasite_magnet" || item.id === "epiphyte_habit") weight += Math.min(2.2, lineage.species / 25);
+      if (item.id === "toxins" || item.id === "glucosinolates" || item.id === "nightshade_alkaloids" || item.id === "latex" || item.id === "citrus_oil_glands" || item.id === "trichomes" || item.id === "aromatic_oils" || item.id === "thorns" || item.id === "ants" || item.id === "rapid" || item.id === "resin_canals") weight += state.ma < 320 ? 0.8 : 0.1;
       if (nicheKey(lineage).includes("aquatic") && (item.id === "floating" || item.id === "aerenchyma")) weight += 2;
       if (nicheKey(lineage).includes("crust") && (item.id === "poikilohydry" || item.id === "dormancy")) weight += 1.3;
       const bias = activeStrategyBias();
@@ -2351,8 +2385,9 @@
       if (habitat.wet > 0.62 && ((item.effects.wet || 0) > 0 || (item.effects.aquatic || 0) > 0)) return true;
       if (habitat.dry > 0.55 && (item.effects.dry || 0) > 0) return true;
       if ((habitat.name === "Alpine" || habitat.name === "Tundra") && (item.effects.cold || 0) > 0) return true;
-      if (habitat.name.includes("Forest") && ((item.effects.height || 0) > 0 || (item.effects.diversity || 0) > 0)) return true;
+      if (habitat.name.includes("Forest") && ((item.effects.height || 0) > 0 || (item.effects.diversity || 0) > 0 || item.id === "orchid_mycorrhiza" || item.id === "fig_syconia")) return true;
       if ((habitat.name === "Coastal Mudflats" || habitat.name === "Mangrove") && (item.id === "salt_tolerance" || item.id === "salt_glands" || item.id === "mucilage")) return true;
+      if ((habitat.name === "Freshwater" || habitat.name === "Wet Lowlands") && item.id === "spathe_spadix") return true;
       return false;
     }
 
@@ -2828,7 +2863,8 @@
         habitats,
         pollinator: parent.pollinator,
         lastSplit: state.ma,
-        seed: parent.seed + id * 811
+        seed: parent.seed + id * 811,
+        taxonomy: null
       };
     }
 
@@ -2986,6 +3022,15 @@
         el.gameOverText.innerHTML = runRecap("Aetherophyta reaches the present day.");
         el.gameOver.classList.add("is-visible");
       }
+    }
+
+    function viewCurrentLineage() {
+      stopAuto();
+      resumeAutoAfterDecision = false;
+      el.gameOver.classList.remove("is-visible");
+      const lineage = selected();
+      if (lineage) state.selectedId = lineage.id;
+      render();
     }
 
     function endingTitle() {
@@ -4007,7 +4052,7 @@
         { rank: "Clade", name: "Embryophyta" }
       ];
 
-      let note = "Higher ranks use real land-plant taxonomy; genus and species are fictional descendants.";
+      let note = "Higher ranks use real land-plant taxonomy; family follows observable traits, while genus and species stay fixed for each branch.";
       if (!has(lineage, "vascular")) {
         ranks.push({ rank: "Grade", name: "Bryophyte-grade embryophyte" });
         ranks.push({ rank: "Division", name: bryophyteDivision(lineage) });
@@ -4032,10 +4077,10 @@
           ranks.push({ rank: "Clade", name: "Spermatophyta" });
           ranks.push({ rank: "Division", name: "Magnoliophyta" });
           ranks.push({ rank: "Clade", name: "Angiosperms" });
-          const monocot = has(lineage, "grass_blades") || lineage.pollinator === "Wind";
+          const monocot = isMonocotLineage(lineage);
           ranks.push({ rank: "Clade", name: monocot ? "Monocots" : "Eudicots" });
           ranks.push({ rank: "Class", name: monocot ? "Liliopsida" : "Magnoliopsida" });
-          ranks.push({ rank: "Order", name: monocot ? "Poales" : floweringOrder(lineage) });
+          ranks.push({ rank: "Order", name: monocot ? monocotOrder(lineage) : floweringOrder(lineage) });
           note = "Flowering placement follows real angiosperm APG-style clades.";
         }
       }
@@ -4060,22 +4105,93 @@
       return "Lycopodiophyta";
     }
 
+    function isMonocotLineage(lineage) {
+      return has(lineage, "grass_blades") || has(lineage, "palm_crown") || has(lineage, "orchid_mycorrhiza") || has(lineage, "spathe_spadix") || lineage.pollinator === "Wind";
+    }
+
+    function monocotOrder(lineage) {
+      if (has(lineage, "spathe_spadix")) return "Alismatales";
+      if (has(lineage, "palm_crown")) return "Arecales";
+      if (has(lineage, "orchid_mycorrhiza")) return "Asparagales";
+      return "Poales";
+    }
+
     function floweringOrder(lineage) {
-      if (has(lineage, "fruits") && has(lineage, "thorns")) return "Rosales";
+      if (has(lineage, "capitula")) return "Asterales";
+      if (has(lineage, "glucosinolates")) return "Brassicales";
+      if (has(lineage, "nightshade_alkaloids")) return "Solanales";
+      if (has(lineage, "pepo_fruits") || has(lineage, "climbing_tendrils")) return "Cucurbitales";
+      if (has(lineage, "compound_umbels")) return "Apiales";
+      if (has(lineage, "mucilage_fibers") || has(lineage, "palmate_leaves")) return "Malvales";
+      if (has(lineage, "fig_syconia") || has(lineage, "latex") || has(lineage, "stone_fruits") || (has(lineage, "fruits") && has(lineage, "thorns"))) return "Rosales";
+      if (has(lineage, "citrus_oil_glands")) return "Sapindales";
       if (has(lineage, "water_storage_tissues") || has(lineage, "cam")) return "Caryophyllales";
+      if (has(lineage, "trichomes") && has(lineage, "aromatic_oils")) return "Lamiales";
       if (has(lineage, "nitrogen_nodules")) return "Fabales";
-      if (has(lineage, "epiphyte_habit")) return "Ericales";
+      if (has(lineage, "epiphyte_habit") || has(lineage, "mycorrhizae")) return "Ericales";
       if (has(lineage, "flowers") && lineage.pollinator === "Birds") return "Lamiales";
       return "Ranunculales";
     }
 
     function terminalTaxonomyFor(lineage) {
+      const terminal = ensureLineageTaxonomy(lineage);
+      return {
+        family: familyForLineage(lineage, terminal),
+        genus: terminal.genus,
+        species: terminal.species
+      };
+    }
+
+    function ensureLineageTaxonomy(lineage) {
+      if (!lineage.taxonomy || lineage.taxonomy.lineageId !== lineage.id || !lineage.taxonomy.genus || !lineage.taxonomy.species) {
+        lineage.taxonomy = createLineageTaxonomy(lineage);
+      }
+      return lineage.taxonomy;
+    }
+
+    function createLineageTaxonomy(lineage) {
       const profile = taxonomyNameProfile(lineage);
       const rng = mulberry(taxonomySeed(lineage, profile.key));
       const genus = generatedTaxonName(rng, profile);
-      const family = familyNameFromGenus(genus);
       const epithet = speciesEpithetFor(lineage, rng, profile);
-      return { family, genus, species: genus + " " + epithet };
+      return {
+        lineageId: lineage.id,
+        profileKey: profile.key,
+        genus,
+        epithet,
+        species: genus + " " + epithet
+      };
+    }
+
+    function familyForLineage(lineage, terminal) {
+      if (has(lineage, "flowers")) {
+        if (has(lineage, "orchid_mycorrhiza")) return "Orchidaceae";
+        if (has(lineage, "palm_crown")) return "Arecaceae";
+        if (has(lineage, "spathe_spadix")) return "Araceae";
+        if (has(lineage, "grass_blades") || lineage.pollinator === "Wind") return "Poaceae";
+        if (has(lineage, "capitula")) return "Asteraceae";
+        if (has(lineage, "glucosinolates")) return "Brassicaceae";
+        if (has(lineage, "nightshade_alkaloids")) return "Solanaceae";
+        if (has(lineage, "pepo_fruits") || has(lineage, "climbing_tendrils")) return "Cucurbitaceae";
+        if (has(lineage, "compound_umbels")) return "Apiaceae";
+        if (has(lineage, "citrus_oil_glands")) return "Rutaceae";
+        if (has(lineage, "mucilage_fibers")) return "Malvaceae";
+        if (has(lineage, "fig_syconia") || (has(lineage, "latex") && has(lineage, "fruits"))) return "Moraceae";
+        if (has(lineage, "stone_fruits") || (has(lineage, "fruits") && has(lineage, "thorns"))) return "Rosaceae";
+        if ((has(lineage, "cam") || has(lineage, "water_storage_tissues")) && (mainHabitat(lineage) === "Desert" || has(lineage, "cam"))) return "Crassulaceae";
+        if (has(lineage, "trichomes") && has(lineage, "aromatic_oils")) return "Lamiaceae";
+        if (has(lineage, "nitrogen_nodules")) return "Fabaceae";
+        if (has(lineage, "floating")) return "Nymphaeaceae";
+        if (has(lineage, "epiphyte_habit") || has(lineage, "mycorrhizae")) return "Ericaceae";
+        if (has(lineage, "tubular") || lineage.pollinator === "Birds") return "Bignoniaceae";
+        return familyNameFromGenus(terminal.genus);
+      }
+      if (has(lineage, "seeds")) return has(lineage, "needles") || has(lineage, "cone_scales") ? "Pinaceae" : "Cycadaceae";
+      if (has(lineage, "vascular")) return has(lineage, "leaves") ? "Polypodiaceae" : "Lycopodiaceae";
+      const division = bryophyteDivision(lineage);
+      if (division === "Marchantiophyta") return "Marchantiaceae";
+      if (division === "Anthocerotophyta") return "Anthocerotaceae";
+      return "Bryaceae";
     }
 
     function taxonomyNameProfile(lineage) {
@@ -4099,14 +4215,7 @@
     }
 
     function taxonomySeed(lineage, profileKey) {
-      let seed = ((state.runSeed || 0) + lineage.seed * 13 + lineage.id * 9973 + lineage.createdMa * 37 + profileKey.length * 811) >>> 0;
-      lineage.traits.slice().sort().forEach((id, index) => {
-        for (let i = 0; i < id.length; i += 1) {
-          seed = (Math.imul(seed ^ id.charCodeAt(i), 1664525) + 1013904223 + index * 97) >>> 0;
-        }
-      });
-      seed = (seed + Math.round((lineage.habitats[mainHabitat(lineage)] || 0) * 10000)) >>> 0;
-      return seed;
+      return ((state.runSeed || 0) + lineage.seed * 13 + lineage.id * 9973 + lineage.createdMa * 37 + profileKey.length * 811) >>> 0;
     }
 
     function generatedTaxonName(rng, profile) {
@@ -4254,7 +4363,7 @@
       return { left, right };
     }
 
-    function drawLeafShape(ctx, length, width, midribColor) {
+    function drawLeafShape(ctx, length, width, midribColor, hairy) {
       ctx.beginPath();
       ctx.moveTo(0, 0);
       ctx.quadraticCurveTo(length * 0.3, -width, length * 0.84, -width * 0.16);
@@ -4262,6 +4371,23 @@
       ctx.quadraticCurveTo(length * 0.3, width, 0, 0);
       ctx.closePath();
       ctx.fill();
+      if (hairy) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(238, 231, 191, 0.76)";
+        ctx.lineWidth = Math.max(0.5, width * 0.055);
+        for (let i = 1; i < 6; i += 1) {
+          const t = i / 6;
+          const hx = length * (0.12 + t * 0.64);
+          const reach = width * (0.16 + (1 - Math.abs(0.5 - t) * 2) * 0.42);
+          ctx.beginPath();
+          ctx.moveTo(hx, -reach * 0.72);
+          ctx.lineTo(hx + length * 0.045, -reach - width * 0.22);
+          ctx.moveTo(hx, reach * 0.72);
+          ctx.lineTo(hx + length * 0.045, reach + width * 0.22);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
       if (midribColor) {
         ctx.save();
         ctx.strokeStyle = midribColor;
@@ -4555,7 +4681,7 @@
         drawLeaves(ctx, midX, midY, lineage, rng, dir);
         drawLeaves(ctx, bx, by, lineage, rng, dir);
         if (has(lineage, "flowers") && i > branchCount - 5) drawFlowers(ctx, bx, by, lineage, rng);
-        if (has(lineage, "fruits") && i > branchCount - 4) drawFruits(ctx, bx, by, rng);
+        if (has(lineage, "fruits") && i > branchCount - 4) drawFruits(ctx, bx, by, lineage, rng);
         if (has(lineage, "seeds") && !has(lineage, "flowers") && i > branchCount - 4) drawSeedCones(ctx, bx, by, rng);
         if (has(lineage, "thorns")) drawThorns(ctx, x, y, dir);
       }
@@ -4598,7 +4724,7 @@
         ctx.save();
         ctx.translate(x + Math.cos(angle) * reach, y + Math.sin(angle) * reach * 0.6);
         ctx.rotate(angle);
-        drawLeafShape(ctx, size, size * 0.38, midrib);
+        drawLeafShape(ctx, size, size * 0.38, midrib, has(lineage, "trichomes"));
         ctx.restore();
       }
     }
@@ -4665,6 +4791,86 @@
     }
 
     function drawFlowers(ctx, x, y, lineage, rng) {
+      if (has(lineage, "capitula")) {
+        for (let f = 0; f < 2; f++) {
+          const fx = x + (rng() - 0.5) * 46;
+          const fy = y + (rng() - 0.5) * 28;
+          ctx.fillStyle = "#f4d35e";
+          for (let p = 0; p < 12; p++) {
+            ctx.save();
+            ctx.translate(fx, fy);
+            ctx.rotate((Math.PI * 2 * p) / 12);
+            drawPetalShape(ctx, 12, 3.2);
+            ctx.restore();
+          }
+          ctx.fillStyle = "#7b5524";
+          ctx.beginPath();
+          ctx.arc(fx, fy, 6.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+      if (has(lineage, "spathe_spadix")) {
+        const fx = x + (rng() - 0.5) * 34;
+        const fy = y + (rng() - 0.5) * 20;
+        ctx.save();
+        ctx.translate(fx, fy);
+        ctx.rotate(-0.28 + rng() * 0.22);
+        ctx.fillStyle = "#f4ead2";
+        ctx.beginPath();
+        ctx.moveTo(0, 14);
+        ctx.bezierCurveTo(-22, -8, -10, -34, 7, -38);
+        ctx.bezierCurveTo(22, -18, 18, 8, 0, 14);
+        ctx.fill();
+        ctx.fillStyle = "#d3a33a";
+        ctx.beginPath();
+        ctx.ellipse(3, -12, 4.5, 24, 0.04, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+      if (has(lineage, "compound_umbels")) {
+        ctx.strokeStyle = "#6b8a43";
+        ctx.lineWidth = 1.2;
+        for (let u = 0; u < 3; u++) {
+          const cx = x + (rng() - 0.5) * 52;
+          const cy = y + (rng() - 0.5) * 30;
+          for (let p = 0; p < 7; p++) {
+            const angle = -Math.PI * 0.85 + p * Math.PI * 0.28;
+            const tx = cx + Math.cos(angle) * 18;
+            const ty = cy + Math.sin(angle) * 12;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy + 12);
+            ctx.lineTo(tx, ty);
+            ctx.stroke();
+            ctx.fillStyle = "#f8f0c8";
+            ctx.beginPath();
+            ctx.arc(tx, ty, 2.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        return;
+      }
+      if (has(lineage, "orchid_mycorrhiza")) {
+        const colors = ["#b26ac4", "#f4d2ec"];
+        for (let f = 0; f < 2; f++) {
+          const fx = x + (rng() - 0.5) * 46;
+          const fy = y + (rng() - 0.5) * 28;
+          ctx.fillStyle = colors[f % colors.length];
+          [-0.75, 0, 0.75].forEach(angle => {
+            ctx.save();
+            ctx.translate(fx, fy);
+            ctx.rotate(angle);
+            drawPetalShape(ctx, 15, 5.8);
+            ctx.restore();
+          });
+          ctx.fillStyle = "#7d3e8b";
+          ctx.beginPath();
+          ctx.ellipse(fx, fy + 5, 8, 5, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
       const colors = lineage.pollinator === "Birds" ? ["#c93332", "#e68036"] : lineage.pollinator === "Bees" ? ["#f0c738", "#77559a"] : ["#d9608b", "#ffffff"];
       const tubular = has(lineage, "tubular");
       for (let f = 0; f < 2; f++) {
@@ -4687,7 +4893,44 @@
       }
     }
 
-    function drawFruits(ctx, x, y, rng) {
+    function drawFruits(ctx, x, y, lineage, rng) {
+      if (has(lineage, "pepo_fruits")) {
+        for (let i = 0; i < 2; i++) {
+          ctx.fillStyle = i % 2 ? "#d7a844" : "#4f8d42";
+          ctx.beginPath();
+          ctx.ellipse(x + rng() * 52 - 26, y + 20 + rng() * 22, 15 + rng() * 8, 11 + rng() * 5, rng() * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+      if (has(lineage, "fig_syconia")) {
+        ctx.fillStyle = "#694077";
+        for (let i = 0; i < 4; i++) {
+          ctx.beginPath();
+          ctx.arc(x + rng() * 48 - 24, y + 14 + rng() * 24, 7 + rng() * 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+      if (has(lineage, "citrus_oil_glands")) {
+        ctx.fillStyle = "#df982f";
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(x + rng() * 46 - 23, y + 18 + rng() * 24, 9 + rng() * 4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        return;
+      }
+      if (has(lineage, "stone_fruits")) {
+        ctx.fillStyle = "#c9483e";
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(x + rng() * 46 - 23, y + 18 + rng() * 24, 8 + rng() * 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#d88338";
+        }
+        return;
+      }
       for (let i = 0; i < 3; i++) {
         ctx.fillStyle = ["#b33434", "#7b2e58", "#d08d2e"][i % 3];
         ctx.beginPath();
@@ -5109,6 +5352,7 @@
       el.gameOver.classList.remove("is-visible");
       init();
     });
+    el.modalViewLineage.addEventListener("click", viewCurrentLineage);
     el.zoomInBtn.addEventListener("click", () => {
       treeZoom = Math.min(2.4, treeZoom + 0.2);
       renderTree();
